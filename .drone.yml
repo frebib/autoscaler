@@ -56,8 +56,8 @@ steps:
   pull: default
   image: plugins/docker
   settings:
-    auto_tag: true
-    repo: drone/autoscaler
+    tag: ${DRONE_COMMIT_BRANCH}
+    repo: spritsail/autoscaler
     password:
       from_secret: docker_password
     username:
