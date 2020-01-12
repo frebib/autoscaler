@@ -129,7 +129,8 @@ func (p *planner) alloc(ctx context.Context, n int) error {
 // helper funciton marks instances for termination.
 func (p *planner) mark(ctx context.Context, n int) error {
 	logger := logger.FromContext(ctx)
-	logger.Debugf("terminate %d servers", n)
+	logger.WithField("server-count", n).
+		Debug("check servers for termination")
 
 	if n == 0 {
 		return nil

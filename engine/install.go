@@ -126,11 +126,13 @@ poller:
 
 			_, err := client.ContainerList(ctx, types.ContainerListOptions{})
 			if err != nil {
-				logger.
-					WithField("error", err.Error()).
-					WithField("name", instance.Name).
-					Debugf("cannot connect, retry in %v", interval)
-				continue
+				if docker.IsErrConnectionFailed(err) {
+					logger.WithField("name", instance.Name).
+						Debugln("cannot connect to docker, retry in %v", interval)
+					continue
+				} else {
+					return err
+				}
 			}
 			break poller
 		}
@@ -233,8 +235,9 @@ poller:
 
 	err = client.ContainerStart(ctx, res.ID, types.ContainerStartOptions{})
 	if err != nil {
-		logger.WithField("image", i.image).
-			Debugln("cannot start the agent container")
+		logger.WithError(err).
+			WithField("image", i.image).
+			Error("cannot start the agent container")
 		return i.errorUpdate(ctx, instance, err)
 	}
 
